@@ -2,14 +2,14 @@
   <div class="app-container">
     <div class="filter-container">
       <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
-        添加策略
+        API管理
       </el-button>
       <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
         导出运行状况
       </el-button>
     </div>
 
-    <el-table
+    <!-- <el-table
       :key="tableKey"
       v-loading="listLoading"
       :data="list"
@@ -59,33 +59,25 @@
           </el-button>
         </template>
       </el-table-column>
-    </el-table>
+    </el-table> -->
 
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
+    <!-- <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" /> -->
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
-        <el-form-item label="币种" prop="type">
-          <el-select v-model="temp.type" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
+      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="150px" style="width: 500px; margin-left:50px;">
+        <el-form-item label="交易所" prop="station">
+          <el-select v-model="temp.station" class="filter-item" placeholder="Please select">
+            <el-option v-for="item in stationTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
           </el-select>
         </el-form-item>
-        <el-form-item label="时间" prop="timestamp">
-          <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="Please pick a date" />
+        <el-form-item label="api key" prop="api">
+          <el-input v-model="temp.api" />
         </el-form-item>
-        <el-form-item label="说明" prop="title">
-          <el-input v-model="temp.title" />
+        <el-form-item label="secret key" prop="secret">
+          <el-input v-model="temp.secret" />
         </el-form-item>
-        <el-form-item label="操作">
-          <el-select v-model="temp.status" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="Imp">
-          <el-rate v-model="temp.importance" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" :max="3" style="margin-top:8px;" />
-        </el-form-item>
-        <el-form-item label="Remark">
-          <el-input v-model="temp.remark" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="Please input" />
+        <el-form-item label="passphrase" prop="passphrase">
+          <el-input v-model="temp.passphrase" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -111,20 +103,20 @@
 </template>
 
 <script>
-import { fetchList, fetchPv, createArticle, updateArticle } from '@/api/article'
+import { mapGetters } from 'vuex'
+import { fetchList, fetchPv, createArticle, updateArticle, fetchApiList, createApi } from '@/api/article'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import { resolve } from 'path'
+import { throwStatement, tsImportEqualsDeclaration } from '@babel/types'
 
-const calendarTypeOptions = [
-  { key: 'CN', display_name: 'China' },
-  { key: 'US', display_name: 'USA' },
-  { key: 'JP', display_name: 'Japan' },
-  { key: 'EU', display_name: 'Eurozone' }
+const stationTypeOptions = [
+  { key: 'OKX', display_name: 'OKX' }
 ]
 
 // arr to obj, such as { CN : "China", US : "USA" }
-const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
+const stationTypeKeyValue = stationTypeOptions.reduce((acc, cur) => {
   acc[cur.key] = cur.display_name
   return acc
 }, {})
@@ -143,7 +135,7 @@ export default {
       return statusMap[status]
     },
     typeFilter(type) {
-      return calendarTypeKeyValue[type]
+      return stationTypeKeyValue[type]
     }
   },
   data() {
@@ -161,11 +153,15 @@ export default {
         sort: '+id'
       },
       importanceOptions: [1, 2, 3],
-      calendarTypeOptions,
+      stationTypeOptions,
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
       statusOptions: ['开启并保存策略', '保存策略','删除策略'],
       showReviewer: false,
       temp: {
+        station:'',
+        api:'',
+        secret:'',
+        passphrase:'',
         id: undefined,
         importance: 1,
         remark: '',
@@ -177,23 +173,54 @@ export default {
       dialogFormVisible: false,
       dialogStatus: '',
       textMap: {
-        update: 'Edit',
-        create: 'Create'
+        update: 'Edit API',
+        create: 'Create API'
       },
       dialogPvVisible: false,
       pvData: [],
       rules: {
-        type: [{ required: true, message: 'type is required', trigger: 'change' }],
-        timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
-        title: [{ required: true, message: 'title is required', trigger: 'blur' }]
+        station: [{ required: true, message: 'exchange is required', trigger: 'change' }],
+        api: [{ required: true, message: 'api key is required', trigger: 'change' }],
+        secret: [{ required: true, message: 'secret key is required', trigger: 'change' }],
+        passphrase: [{ required: true, message: 'passphrase is required', trigger: 'change' }],
       },
       downloadLoading: false
     }
   },
-  created() {
-    this.getList()
+  computed: {
+    ...mapGetters([
+      'uid',
+      'name'
+    ])
+  },
+  mounted() {
+    this.getApi(this.uid)
   },
   methods: {
+    getApi(uid){
+      fetchApiList({
+        id:0,
+        user_id:uid,
+        api_key:'',
+        secret_key:'',
+        passphrase:'',
+      }).then(
+        response => {
+        this.temp.station = response.data[0].station
+        this.temp.api = response.data[0].api_key
+        this.temp.secret = response.data[0].secret_key
+        this.temp.passphrase = response.data[0].passphrase
+      
+        console.log('OK!')
+      }
+      ).catch(error => {
+        this.dialogStatus = 'create'
+        this.dialogFormVisible = true
+        this.$nextTick(() => {
+        this.$refs['dataForm'].clearValidate()
+      })
+      })
+    },
     getList() {
       this.listLoading = true
       fetchList(this.listQuery).then(response => {
@@ -230,19 +257,7 @@ export default {
       }
       this.handleFilter()
     },
-    resetTemp() {
-      this.temp = {
-        id: undefined,
-        importance: 1,
-        remark: '',
-        timestamp: new Date(),
-        title: '',
-        status: '保存策略',
-        type: ''
-      }
-    },
     handleCreate() {
-      this.resetTemp()
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
       this.$nextTick(() => {
@@ -252,10 +267,17 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
-          this.temp.author = 'vue-element-admin'
-          createArticle(this.temp).then(() => {
-            this.list.unshift(this.temp)
+          var tmp = {
+            id:0,
+            user_id:this.uid,
+            api_key:this.temp.api,
+            secret_key:this.temp.secret,
+            passphrase:this.temp.passphrase,
+          }
+          console.log(tmp)
+          createApi(tmp).then(() => {
+            // this.list.unshift(this.temp)
+
             this.dialogFormVisible = false
             this.$notify({
               title: 'Success',
@@ -268,7 +290,7 @@ export default {
       })
     },
     handleUpdate(row) {
-      this.temp = Object.assign({}, row) // copy obj
+      // this.temp = Object.assign({}, row) // copy obj
       this.temp.timestamp = new Date(this.temp.timestamp)
       this.dialogStatus = 'update'
       this.dialogFormVisible = true

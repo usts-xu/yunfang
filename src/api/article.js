@@ -1,4 +1,19 @@
 import request from '@/utils/request'
+export function fetchApiList(data){
+  console.log(data)
+  return request({
+    url: '/api/api_manager/queryconfig',
+    method: 'post',
+    data
+  })
+}
+export function createApi(data) {
+  return request({
+    url: '/api/api_manager/addconfig',
+    method: 'post',
+    data
+  })
+}
 
 export function fetchList(query) {
   return request({
