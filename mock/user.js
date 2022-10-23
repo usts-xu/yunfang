@@ -30,8 +30,12 @@ module.exports = [
     type: 'post',
     response: config => {
       const { username } = config.body
+      const { password } = config.body
       this.tempname = username
       // const token = tokens[username]
+
+
+
       const token = tokens['editor']
       // mock error
       if (!token) {

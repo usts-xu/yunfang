@@ -8,7 +8,7 @@
       <!-- <github-corner style="position: absolute; top: 0px; border: 0; right: 0;" /> -->
       <div class="info-container">
         <span class="display_name">云方量化交易平台</span>
-        <span style="font-size:20px;padding-top:20px;display:inline-block;color:blue;">欢迎您：{{ name }}</span>
+        <span style="font-size:20px;padding-top:20px;display:inline-block;color:blue;">欢迎您：{{ name }} VIP剩余时间：{{ viptime }} 会员状态：{{ status }} 最近登录时间：{{ remark}}</span>
       </div>
     </div>
     <div style="border:solid #000000 ;margin-top:100px;text-align: center;" >
@@ -34,7 +34,10 @@ export default {
     ...mapGetters([
       'name',
       'avatar',
-      'roles'
+      'roles',
+      'viptime',
+      'status',
+      'remark',
     ])
   }
 }

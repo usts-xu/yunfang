@@ -1,24 +1,26 @@
 import request from '@/utils/request'
 
 export function login(data) {
-  return request({
-    url: '/vue-element-admin/user/login',
+  console.log('登录中。。。')
+  var a = request({
+    url: '/api/login',
     method: 'post',
     data
   })
+  return a
 }
 
 export function getInfo(token) {
   return request({
-    url: '/vue-element-admin/user/info',
-    method: 'get',
-    params: { token }
+    url: '/api/info',
+    method: 'get'
+    // params: { token }
   })
 }
 
 export function logout() {
   return request({
-    url: '/vue-element-admin/user/logout',
+    url: '/api/logout',
     method: 'post'
   })
 }

@@ -3,14 +3,30 @@ import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
 
 const state = {
+  uid: '',
   token: getToken(),
   name: '',
   avatar: '',
   introduction: '',
-  roles: []
+  roles: [],
+  viptime:'',
+  status:'',
+  remark:''
 }
 
 const mutations = {
+  SET_UID: (state,uid) =>{
+    state.uid = uid
+  },
+  SET_REMARK: (state,remark) =>{
+    state.remark = remark
+  },
+  SET_STATUS: (state,status) =>{
+    state.status = status
+  },
+  SET_VIPTIME: (state,viptime) => {
+    state.viptime = viptime
+  },
   SET_TOKEN: (state, token) => {
     state.token = token
   },
@@ -27,17 +43,32 @@ const mutations = {
     state.roles = roles
   }
 }
-
+var temprole = ''
 const actions = {
   // user login
   login({ commit }, userInfo) {
+
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
       login({ username: username.trim(), password: password }).then(response => {
         const { data } = response
-        commit('SET_TOKEN', data.token)
-        setToken(data.token)
+        temprole = data.role
+        if(data.role==='admin'){
+          var tok = 'admin-token'
+        }else{
+          var tok = 'editor-token'
+        }
+        setToken(tok)
+        commit('SET_UID', data.id)
+        commit('SET_TOKEN', tok)
+        commit('SET_NAME', data.name)
+        commit('SET_AVATAR', data.avatar)
+        commit('SET_INTRODUCTION', data.introduction)
+        commit('SET_VIPTIME',data.vip_time)
+        commit('SET_STATUS',data.status)
+        commit('SET_REMARK',data.remark)
         resolve()
+        console.log('登录成功！')
       }).catch(error => {
         reject(error)
       })
@@ -48,24 +79,30 @@ const actions = {
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
       getInfo(state.token).then(response => {
-        const { data } = response
-
-        if (!data) {
-          reject('Verification failed, please Login again.')
+        // const { data } = response
+        console.log('角色：')
+        console.log(temprole)
+        if(temprole ==='admin'){
+          console.log('管理员')
+          var roles = ['admin']
+        } else{
+          console.log('用户')
+          var roles = ['user']
         }
+        
+        // if (!data) {
+        //   reject('Verification failed, please Login again.')
+        // }
 
-        const { roles, name, avatar, introduction } = data
+        // const { roles, name, avatar, introduction } = data
 
         // roles must be a non-empty array
-        if (!roles || roles.length <= 0) {
-          reject('getInfo: roles must be a non-null array!')
-        }
-
+        // if (!roles || roles.length <= 0) {
+        //   reject('getInfo: roles must be a non-null array!')
+        // }
         commit('SET_ROLES', roles)
-        commit('SET_NAME', name)
-        commit('SET_AVATAR', avatar)
-        commit('SET_INTRODUCTION', introduction)
-        resolve(data)
+        
+        resolve(state)
       }).catch(error => {
         reject(error)
       })
