@@ -1,6 +1,5 @@
 import request from '@/utils/request'
 export function fetchApiList(data){
-  console.log(data)
   return request({
     url: '/api/api_manager/queryconfig',
     method: 'post',
@@ -15,27 +14,36 @@ export function createApi(data) {
   })
 }
 
-export function fetchList(query) {
+export function updateApi(data) {
   return request({
-    url: '/vue/api_manager/querylist',
-    method: 'get',
-    params: query
+    url: '/api/api_manager/updateconfig',
+    method: 'post',
+    data
   })
 }
 
-export function fetchArticle(id) {
+export function fetchTactic(data) {
+  console.log(data)
   return request({
-    url: '/vue-element-admin/article/detail',
-    method: 'get',
-    params: { id }
+    url: '/api/tactic/queryconfig',
+    method: 'post',
+    data
   })
 }
 
-export function fetchPv(pv) {
+export function updateTactic(data) {
   return request({
-    url: '/vue-element-admin/article/pv',
-    method: 'get',
-    params: { pv }
+    url: '/api/tactic/updatetactic',
+    method: 'post',
+    data
+  })
+}
+
+export function fetch_user_tactic(data) {
+  return request({
+    url: '/api/tactic/get_user_tactic',
+    method: 'post',
+    data
   })
 }
 
