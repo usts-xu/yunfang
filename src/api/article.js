@@ -23,7 +23,6 @@ export function updateApi(data) {
 }
 
 export function fetchTactic(data) {
-  console.log(data)
   return request({
     url: '/api/tactic/queryconfig',
     method: 'post',
@@ -39,7 +38,7 @@ export function updateTactic(data) {
   })
 }
 
-export function fetch_user_tactic(data) {
+export function fetchUsertactic(data) {
   return request({
     url: '/api/tactic/get_user_tactic',
     method: 'post',
@@ -47,9 +46,10 @@ export function fetch_user_tactic(data) {
   })
 }
 
-export function createArticle(data) {
+export function updataUsetTactic(data) {
+  console.log(data)
   return request({
-    url: '/vue-element-admin/article/create',
+    url: '/api/tactic/update_user_tactic',
     method: 'post',
     data
   })

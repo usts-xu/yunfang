@@ -16,6 +16,9 @@
             <el-option v-for="item in tacticOptions" :key="item.key" :label="item.display_name" :value="item.key" />
           </el-select>
         </el-form-item>
+        <el-form-item label="币种" prop="name">
+          <el-input v-model="tactic.symbol" />
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="chooseTacticVisible= false">
@@ -42,7 +45,7 @@
         <el-form-item label="策略名" :label-width="formLabelWidth">
           <el-input v-model="tactic.tactic_name" :disabled="true"></el-input>
         </el-form-item>
-        <div v-if="tactic.tactic_name == '马丁'">
+        <div v-if="tactic.tactic_name == '云方一号'">
 
         <el-form-item label="实盘/模拟盘" :label-width="formLabelWidth" >
         <el-select v-model="tactic.flag" placeholder="请选择实盘或者模拟盘">
@@ -141,9 +144,6 @@
         <el-form-item label="识别号" :label-width="formLabelWidth">
           <el-input v-model="tactic.identify_id"></el-input>
         </el-form-item>
-        <el-form-item label="币种标识" :label-width="formLabelWidth">
-          <el-input v-model="tactic.symbol"></el-input>
-        </el-form-item>
         <el-form-item label="策略备注" :label-width="formLabelWidth">
           <el-input v-model="tactic.tactic_mark"></el-input>
         </el-form-item>
@@ -151,32 +151,59 @@
         </el-form>
         <div class="demo-drawer__footer">
           <el-button @click="cancelForm">取 消</el-button>
-          <el-button type="primary" @click="UpdateTactic()" :loading="loading">{{ loading ? '提交中 ...' : '修改' }}</el-button>
+          <el-button type="primary" @click="UpdateTactic()" :loading="loading">{{ loading ? '提交中 ...' : '保存' }}</el-button>
         </div>
       </div>
     </el-drawer>
 
-     <!-- <el-table
-      :key="tableKey"
-      v-loading="listLoading"
-      :data="tactic_info_list"
+     <el-table
+      v-loading="tacticLoading"
+      :data="tactic_list"
       border
       fit
       highlight-current-row
       style="width: 100%;"
     >
-      <el-table-column label="序号" prop="id" sortable="custom" align="center" width="80">
+    <el-table-column label="币种" width="200px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.id }}</span>
+          <span>{{ row.symbol }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="策略备注" width="200px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.tactic_mark }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="策略名" width="200px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.tactic_name }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="一键启动" width="250" align="center" >
+        <template slot-scope="scope">
+            <el-switch
+              v-model="scope.row.choose_status"
+              active-text="开启"
+              inactive-text="暂停"
+              :active-value="true"
+              :inactive-value="false"
+              @change="SubmitTactic(scope.$index)">
+            </el-switch>
+          </template>  
+      </el-table-column>
+      <el-table-column label="操作" width="250" align="center" >
+        <template slot-scope="scope">
+          <el-button type="primary" icon="el-icon-edit" @click.native="EditUserTactic(scope.$index)" circle></el-button>
+        </template>
+      </el-table-column>
+
+    </el-table>
+
+    <!-- 
+
     </el-table> -->
       <!--
-      <el-table-column label="币种" width="150px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.catelog }}</span>
-        </template>
-      </el-table-column>
+
       <el-table-column label="操作时间" width="150px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
@@ -241,25 +268,23 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { fetchApiList, createApi, updateApi, fetchTactic, updateTactic} from '@/api/article'
+import { fetchApiList, createApi, updateApi, fetchTactic, updateTactic, fetchUsertactic,updataUsetTactic } from '@/api/article'
 
 const stationTypeOptions = [
   { key: 'OKX', display_name: 'OKX' }
 ]
 const tacticOptions = [
-  { key: '马丁', display_name: '马丁' }
+  { key: '云方一号', display_name: '云方一号' }
 ]
 export default {
   name: 'ComplexTable',
   data() {
     return {
+      tactic_list:[],
       tactic_info_list:null,
-      tableKey: 0,
-      list: null,
-      total: 0,
       tacticdialog: false,
       loading: false,
-      listLoading: true,
+      tacticLoading: true,
       stationTypeOptions,
       tacticOptions,
       formLabelWidth: '150px',
@@ -267,7 +292,7 @@ export default {
       tactic: {
         user_id:'',
         flag:'',
-        tactic_name: '马丁',
+        tactic_name: '云方一号',
         tactic_mark: '',
         set_long_up: '',
         set_long_down: '',
@@ -369,9 +394,58 @@ export default {
   },
   mounted() {
     this.getApi(this.uid)
-
+    this.getUserTactic()
+    setTimeout(() => {
+          this.tacticLoading = false
+        }, 0.5 * 1000)
+    console.log(this.tactic_list)
   },
   methods: {
+    EditUserTactic(index){
+      var temp = this.tactic_list[index]
+      this.tactic.tactic_name = temp.tactic_name
+      this.tactic.symbol = temp.symbol
+      this.getTactic()
+    },
+    getUserTactic(){
+      this.tactic_list = []
+      console.log('GetUserTactic')
+      var tmp = {user_id:this.uid,tactic_name:this.tactic.tactic_name,symbol:this.tactic.symbol}
+      fetchUsertactic(tmp).then(response => {
+        console.log(response.data.length)
+        for (var i=0;i<response.data.length;i++){
+          this.tactic_list.push({
+            symbol: response.data[i].symbol,
+            tactic_mark:response.data[i].tactic_mark,
+            tactic_name:response.data[i].tactic_name,
+            thread_id:response.data[i].thread_id,
+            status:response.data[i].status,
+            choose_status:response.data[i].status=='1'?true:false
+          })
+        }
+        console.log('tmp1')
+        console.log(this.tactic_list)
+      })
+    },
+    SubmitTactic(index){
+      var tmp = this.tactic_list[index]
+      console.log('tmp2'+tmp)
+      var tmpusertactic = {user_id:this.uid,tactic_name:tmp.tactic_name,symbol:tmp.symbol,status:tmp.choose_status==true?'0':'1',thread_id:tmp.thread_id}
+      updataUsetTactic(tmpusertactic).then(
+        this.tacticLoading = true,
+            setTimeout(() => {
+                this.getUserTactic()
+                this.tacticLoading = false
+                this.$notify({
+                  title: 'Success',
+                  message: 'Update Successfully',
+                  type: 'success',
+                  duration: 2000
+                })
+              }, 1 * 1000),
+            
+      )
+    },
     getApi(uid){
       fetchApiList({
         id:0,
@@ -398,9 +472,10 @@ export default {
       })
     },
     getTactic() {
-      alert('您选择修改的是：'+this.tactic.tactic_name+"策略")
-      this.listLoading = true
-      var tmp = {user_id:this.uid,tactic_name:this.tactic.tactic_name}
+      this.tacticLoading = true
+      var tmp = {user_id:this.uid,tactic_name:this.tactic.tactic_name,symbol:this.tactic.symbol}
+      console.log('teee')
+      console.log(tmp)
       fetchTactic(tmp).then(response => {
         this.tactic_info_list = response.data,
         this.tactic.user_id = this.tactic_info_list.user_id,
@@ -440,19 +515,12 @@ export default {
         this.tactic.number_repetitions = this.tactic_info_list.number_repetitions,
         
         this.tacticdialog = true
-        console.log('content',this.tactic_info_list)
+        console.log('content',this.tactic)
         // Just to simulate the time of the request
         setTimeout(() => {
-          this.listLoading = false
+          this.tacticLoading = false
         }, 0.5 * 1000)
       })
-    },
-    handleModifyStatus(row, status) {
-      this.$message({
-        message: '操作Success',
-        type: 'success'
-      })
-      row.status = status
     },
     handleConfigCreate() {
       this.configStatus = 'create'
@@ -473,8 +541,6 @@ export default {
           }
           console.log(tmp)
           createApi(tmp).then(() => {
-            // this.list.unshift(this.temp)
-
             this.configFormVisible = false
             this.$notify({
               title: 'Success',
@@ -567,13 +633,17 @@ export default {
 
           console.log(this.temp_tactic)
           updateTactic(this.temp_tactic).then(response => {
-             this.$notify({
+            this.tactic_list = []
+            this.getUserTactic()
+            this.chooseTacticVisible = false
+            this.$notify({
               title: 'Success',
               message: 'Update Successfully',
               type: 'success',
               duration: 2000
             })
           });
+          
           this.timer = setTimeout(() => {
             done();
             // 动画关闭需要一定的时间
