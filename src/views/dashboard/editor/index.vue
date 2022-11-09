@@ -11,7 +11,7 @@
         <span style="font-size:20px;padding-top:20px;display:inline-block;color:blue;">欢迎您：{{ name }} VIP剩余时间：{{ viptime }} 会员状态：{{ status }} 最近登录时间：{{ remark}}</span>
       </div>
     </div>
-    <div style="border:solid #000000 ;margin-top:100px;text-align: center;" >
+    <div style="border:solid #000000 ; -top:100px;text-align: center;" >
     <img style = "width: 80%;height:90%;" src="@/assets/img/operate_measures.png"></img>
   </div>
   </div>

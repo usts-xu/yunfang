@@ -89,9 +89,9 @@ export const constantRoutes = [
     children: [
       {
         path: 'index',
-        component: () => import('@/views/apimanager/complex-table'),
+        component: () => import('@/views/apimanager/manager-center'),
         name: 'Icons',
-        meta: { title: 'API管理', icon: 'example', noCache: true }
+        meta: { title: '管理模块', icon: 'example', noCache: true }
       }
     ]
   },
@@ -101,9 +101,9 @@ export const constantRoutes = [
     children: [
       {
         path: 'index',
-        component: () => import('@/views/staticsetting/index'),
+        component: () => import('@/views/data-model/index'),
         name: 'static',
-        meta: { title: '策略设置', icon: 'skill', noCache: true }
+        meta: { title: '数据模块', icon: 'skill', noCache: true }
       }
     ]
   },
@@ -115,7 +115,7 @@ export const constantRoutes = [
         path: 'index',
         component: () => import('@/views/trade/index'),
         name: 'Icons',
-        meta: { title: '交易日志', icon: 'list', noCache: true }
+        meta: { title: '日志模块', icon: 'list', noCache: true }
       }
     ]
   },
@@ -127,7 +127,7 @@ export const constantRoutes = [
         path: 'index',
         component: () => import('@/views/documentation/index'),
         name: 'Documentation',
-        meta: { title: '文档服务', icon: 'documentation', affix: true }
+        meta: { title: '说明模块', icon: 'documentation', affix: true }
       }
     ]
   },
@@ -217,7 +217,7 @@ export const asyncRoutes = [
 ]
 
 const createRouter = () => new Router({
-  // mode: 'history', // require service support
+  mode: 'hash', // require service support
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRoutes
 })

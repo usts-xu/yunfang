@@ -28,7 +28,7 @@ const roles = [
         {
           path: 'dashboard',
           name: 'Dashboard',
-          meta: { title: 'dashboard', icon: 'dashboard' }
+          meta: { title: '云方量化', icon: 'dashboard' }
         }
       ]
     }]

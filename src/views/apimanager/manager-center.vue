@@ -16,16 +16,25 @@
             <el-option v-for="item in tacticOptions" :key="item.key" :label="item.display_name" :value="item.key" />
           </el-select>
         </el-form-item>
+        <el-form-item label="模拟盘实盘选择">
+          <el-select v-model="tactic.flag" placeholder="请选择实盘或者模拟盘">
+            <el-option label="模拟盘" value="1"></el-option>
+          <el-option label="实盘" value="0"></el-option>
+        </el-select>
+        </el-form-item>
         <el-form-item label="币种" prop="name">
           <el-input v-model="tactic.symbol" />
+        </el-form-item>
+        <el-form-item label="说明" prop="name">
+        <h3>如果币种已有策略则执行的是修改操作，如果没有，则执行的是创建的操作</h3>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="chooseTacticVisible= false">
-          Cancel
+          取消
         </el-button>
         <el-button type="primary" @click="getTactic()">
-          Confirm
+          确认
         </el-button>
       </div>
     </el-dialog>
@@ -47,7 +56,7 @@
         </el-form-item>
         <div v-if="tactic.tactic_name == '云方一号'">
 
-        <el-form-item label="实盘/模拟盘" :label-width="formLabelWidth" >
+        <el-form-item label="盘选择" :label-width="formLabelWidth">
         <el-select v-model="tactic.flag" placeholder="请选择实盘或者模拟盘">
           <el-option label="模拟盘" value="1"></el-option>
           <el-option label="实盘" value="0"></el-option>
@@ -160,9 +169,8 @@
       v-loading="tacticLoading"
       :data="tactic_list"
       border
-      fit
       highlight-current-row
-      style="width: 100%;"
+      style="width: 80%;"
     >
     <el-table-column label="币种" width="200px" align="center">
         <template slot-scope="{row}">
@@ -405,12 +413,13 @@ export default {
       var temp = this.tactic_list[index]
       this.tactic.tactic_name = temp.tactic_name
       this.tactic.symbol = temp.symbol
+      this.tactic.flag = '0'
       this.getTactic()
     },
     getUserTactic(){
       this.tactic_list = []
       console.log('GetUserTactic')
-      var tmp = {user_id:this.uid,tactic_name:this.tactic.tactic_name,symbol:this.tactic.symbol}
+      var tmp = {user_id:this.uid,tactic_name:this.tactic.tactic_name,symbol:this.tactic.symbol,flag:'0'}
       fetchUsertactic(tmp).then(response => {
         console.log(response.data.length)
         for (var i=0;i<response.data.length;i++){
@@ -473,7 +482,7 @@ export default {
     },
     getTactic() {
       this.tacticLoading = true
-      var tmp = {user_id:this.uid,tactic_name:this.tactic.tactic_name,symbol:this.tactic.symbol}
+      var tmp = {user_id:this.uid,tactic_name:this.tactic.tactic_name,symbol:this.tactic.symbol,flag:this.tactic.flag}
       console.log('teee')
       console.log(tmp)
       fetchTactic(tmp).then(response => {
