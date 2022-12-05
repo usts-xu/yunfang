@@ -10,15 +10,15 @@
         <el-col :span="18" :xs="24">
           <el-card>
             <el-tabs v-model="activeTab">
-              <el-tab-pane label="Activity" name="activity">
+              <el-tab-pane label="操作日志" name="activity">
                 <activity />
               </el-tab-pane>
-              <el-tab-pane label="Timeline" name="timeline">
+              <el-tab-pane label="收益曲线" name="timeline">
                 <timeline />
               </el-tab-pane>
-              <el-tab-pane label="Account" name="account">
+              <!-- <el-tab-pane label="外部链接" name="account">
                 <account :user="user" />
-              </el-tab-pane>
+              </el-tab-pane> -->
             </el-tabs>
           </el-card>
         </el-col>
@@ -48,6 +48,8 @@ export default {
     ...mapGetters([
       'name',
       'avatar',
+      'viptime',
+      'status',
       'roles'
     ])
   },
@@ -58,8 +60,11 @@ export default {
     getUser() {
       this.user = {
         name: this.name,
-        role: this.roles.join(' | '),
+        // role: this.roles.join(' | '),
+        role: this.roles[0]=='user'?'用户':'管理员',
         email: 'admin@test.com',
+        viptime:parseInt(parseInt(this.viptime)/24),
+        status:this.status,
         avatar: this.avatar
       }
     }

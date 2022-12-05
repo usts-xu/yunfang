@@ -25,7 +25,7 @@ export default {
   },
   data() {
     return {
-      title: '云方量化',
+      title: '无限策略',
       logo: require('../../../assets/img/logo.png')
     }
   }

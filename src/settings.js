@@ -1,5 +1,5 @@
 module.exports = {
-  title: 'Vue Element Admin',
+  title: '无限策略量化辅助系统',
 
   /**
    * @type {boolean} true | false

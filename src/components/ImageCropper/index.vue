@@ -410,7 +410,7 @@ export default {
     },
     // 关闭控件
     off() {
-      setTimeout(() => {
+      set(() => {
         this.$emit('input', false)
         this.$emit('close')
         if (this.step === 3 && this.loading === 2) {
@@ -421,7 +421,7 @@ export default {
     // 设置步骤
     setStep(no) {
       // 延时是为了显示动画效果呢，哈哈哈
-      setTimeout(() => {
+      set(() => {
         this.step = no
       }, 200)
     },
@@ -598,7 +598,7 @@ export default {
         if (scale.rotateRight) {
           const degree = ++scale.degree
           this.createImg(degree)
-          setTimeout(function() {
+          set(function() {
             rotate()
           }, 60)
         }
@@ -613,7 +613,7 @@ export default {
         if (scale.rotateLeft) {
           const degree = --scale.degree
           this.createImg(degree)
-          setTimeout(function() {
+          set(function() {
             rotate()
           }, 60)
         }
@@ -634,7 +634,7 @@ export default {
         if (scale.zoomAddOn) {
           const range = scale.range >= 100 ? 100 : ++scale.range
           this.zoomImg(range)
-          setTimeout(function() {
+          set(function() {
             zoom()
           }, 60)
         }
@@ -653,7 +653,7 @@ export default {
         if (scale.zoomSubOn) {
           const range = scale.range <= 0 ? 0 : --scale.range
           this.zoomImg(range)
-          setTimeout(function() {
+          set(function() {
             zoom()
           }, 60)
         }
@@ -710,7 +710,7 @@ export default {
       scale.width = nWidth
       scale.height = nHeight
       scale.range = newRange
-      setTimeout(() => {
+      set(() => {
         if (scale.range === newRange) {
           this.createImg()
         }

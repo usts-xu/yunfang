@@ -24,3 +24,35 @@ export function logout() {
     method: 'post'
   })
 }
+
+
+export function getRegCode() {
+  return request({
+    url: '/api/admin/getregcode',
+    method: 'get'
+  })
+}
+
+
+export function Register(data) {
+  return request({
+    url: '/api/admin/register',
+    method: 'post',
+    data
+  })
+}
+
+export function Fetchalluser() {
+  return request({
+    url: '/api/admin/fetchalluser',
+    method: 'get'
+  })
+}
+
+export function UpdateVipTime(data) {
+  return request({
+    url: '/api/admin/updateviptime',
+    method: 'post',
+    data
+  })
+}

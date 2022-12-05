@@ -3,7 +3,7 @@
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" autocomplete="on" label-position="left">
 
       <div class="title-container">
-        <h3 class="title">登陆云方量化</h3>
+        <h3 class="title">无限策略</h3>
       </div>
 
       <el-form-item prop="username">
@@ -21,7 +21,7 @@
         />
       </el-form-item>
 
-      <el-tooltip v-model="capsTooltip" content="Caps lock is On" placement="right" manual>
+      <el-tooltip v-model="capsTooltip" content="登录码切勿泄露给他人" placement="right" manual>
         <el-form-item prop="password">
           <span class="svg-container">
             <svg-icon icon-class="password" />
@@ -31,12 +31,12 @@
             ref="password"
             v-model="loginForm.password"
             :type="passwordType"
-            placeholder="密码"
+            placeholder="登录码"
             name="password"
             tabindex="2"
             autocomplete="on"
             @keyup.native="checkCapslock"
-            @blur="capsTooltip = false"
+            @blur="capsTooltip = true"
             @keyup.enter.native="handleLogin"
           />
           <span class="show-pwd" @click="showPwd">
@@ -45,22 +45,10 @@
         </el-form-item>
       </el-tooltip>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
-
-      <!-- <div style="position:relative">
-        <div class="tips">
-          <span>Username : admin</span>
-          <span>Password : any</span>
-        </div>
-        <div class="tips">
-          <span style="margin-right:18px;">Username : editor</span>
-          <span>Password : any</span>
-        </div>
-
-        <el-button class="thirdparty-button" type="primary" @click="showDialog=true">
-          Or connect with
-        </el-button>
-      </div> -->
+      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">登陆</el-button>
+      <!-- <p class="tips">
+        <a href="#" @click="gotoregister" type="primary">还没有帐号？立即注册</a>
+      </p> -->
     </el-form>
 
     <el-dialog title="Or connect with" :visible.sync="showDialog">
@@ -75,11 +63,8 @@
 
 <script>
 import { validUsername } from '@/utils/validate'
-import SocialSign from './components/SocialSignin'
-
 export default {
   name: 'Login',
-  components: { SocialSign },
   data() {
     const validateUsername = (rule, value, callback) => {
       if (!validUsername(value)) {
@@ -90,7 +75,7 @@ export default {
     }
     const validatePassword = (rule, value, callback) => {
       if (value.length < 3) {
-        callback(new Error('密码不能小于3位！'))
+        callback(new Error('登录码不能小于30位！'))
       } else {
         callback()
       }
@@ -104,7 +89,7 @@ export default {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
         password: [{ required: true, trigger: 'blur', validator: validatePassword }]
       },
-      passwordType: 'password',
+      passwordType: '',
       capsTooltip: false,
       loading: false,
       showDialog: false,
@@ -138,6 +123,9 @@ export default {
     // window.removeEventListener('storage', this.afterQRScan)
   },
   methods: {
+    gotoregister(){
+      this.$router.push({path:'/register'})
+    },
     checkCapslock(e) {
       const { key } = e
       this.capsTooltip = key && key.length === 1 && (key >= 'A' && key <= 'Z')
@@ -217,6 +205,7 @@ $cursor: #fff;
 }
 
 /* reset element-ui css */
+
 .login-container {
   .el-input {
     display: inline-block;
@@ -238,6 +227,7 @@ $cursor: #fff;
         -webkit-text-fill-color: $cursor !important;
       }
     }
+    
   }
 
   .el-form-item {
@@ -257,7 +247,8 @@ $light_gray:#eee;
 .login-container {
   min-height: 100%;
   width: 100%;
-  background-color: $bg;
+  background-color: #000000;
+  // background-image:url('../../assets/img/apic34629.jpg');
   overflow: hidden;
 
   .login-form {

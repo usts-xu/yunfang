@@ -28,7 +28,7 @@ const roles = [
         {
           path: 'dashboard',
           name: 'Dashboard',
-          meta: { title: '云方量化', icon: 'dashboard' }
+          meta: { title: '无限策略', icon: 'dashboard' }
         }
       ]
     }]

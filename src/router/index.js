@@ -40,6 +40,11 @@ import Layout from '@/layout'
  */
 export const constantRoutes = [
   {
+    path: '/register',
+    component: () => import('@/views/register/index'),
+    hidden:true,
+  },
+  {
     path: '/redirect',
     component: Layout,
     hidden: true,
@@ -84,53 +89,53 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/apimanager',
+    path: '/incomedetail',
     component: Layout,
     children: [
       {
         path: 'index',
-        component: () => import('@/views/apimanager/manager-center'),
+        component: () => import('@/views/incomedetail/index'),
         name: 'Icons',
-        meta: { title: '管理模块', icon: 'example', noCache: true }
+        meta: { title: '收益详情', icon: 'list', noCache: true }
       }
     ]
   },
-  {
-    path: '/static',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/data-model/index'),
-        name: 'static',
-        meta: { title: '数据模块', icon: 'skill', noCache: true }
-      }
-    ]
-  },
-  {
-    path: '/trade',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/trade/index'),
-        name: 'Icons',
-        meta: { title: '日志模块', icon: 'list', noCache: true }
-      }
-    ]
-  },
-  {
-    path: '/documentation',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/documentation/index'),
-        name: 'Documentation',
-        meta: { title: '说明模块', icon: 'documentation', affix: true }
-      }
-    ]
-  },
+  // {
+  //   path: '/static',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       component: () => import('@/views/data-model/index'),
+  //       name: 'static',
+  //       meta: { title: '数据模块', icon: 'skill', noCache: true }
+  //     }
+  //   ]
+  // },
+  // {
+  //   path: '/trade',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       component: () => import('@/views/trade/index'),
+  //       name: 'Icons',
+  //       meta: { title: '日志模块', icon: 'list', noCache: true }
+  //     }
+  //   ]
+  // },
+  // {
+  //   path: '/documentation',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       component: () => import('@/views/documentation/index'),
+  //       name: 'Documentation',
+  //       meta: { title: '说明模块', icon: 'documentation', affix: true }
+  //     }
+  //   ]
+  // },
   {
     path: '/profile',
     component: Layout,
@@ -141,7 +146,7 @@ export const constantRoutes = [
         path: 'index',
         component: () => import('@/views/profile/index'),
         name: 'Profile',
-        meta: { title: '个人中心', icon: 'user', noCache: true}
+        meta: { title: '个人中心', icon: 'people', noCache: true}
       }
     ]
   }
@@ -201,16 +206,16 @@ export const asyncRoutes = [
   // nestedRouter,
   // tableRouter,
 
-  {
-    path: 'external-link',
-    component: Layout,
-    children: [
-      {
-        path: 'https://github.com/PanJiaChen/vue-element-admin',
-        meta: { title: 'External Link', icon: 'link' }
-      }
-    ]
-  },
+  // {
+  //   path: 'external-link',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: 'https://github.com/PanJiaChen/vue-element-admin',
+  //       meta: { title: 'External Link', icon: 'link' }
+  //     }
+  //   ]
+  // },
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
